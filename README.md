@@ -3,6 +3,12 @@ A simple application for searching folders for items (files, folders or file con
 
 I made this as a replacement for windows explorer's dreadful search feature which takes forever just to find a file (as it's indexing while searching. Even after turning that off, it's still slow). This app does no indexing
 
+## Preview
+Planning on making the UI a bit less "clunky" (It just seems a bit clogged to me; i'm not great at UI design)
+![](FolderDeepSearchV2_2022-12-06_16.38.19.png)
+
+## Adding to windows context menus
+
 It's possible to add a few registry options to open the app in the folder you're currently in (in windows explorer).
 - Go to `Computer\HKEY_CLASSES_ROOT\Directory\Background\shell`
 - Create a new key/folder called `FolderDeepSearch` (or anything you'd like)
@@ -11,3 +17,4 @@ It's possible to add a few registry options to open the app in the folder you're
 - Create a sub-key called `command`
 - Set the (Default) contents to `"path to the app exe" "%V"` (make sure to include the quotes)
 After doing that, it should appear in your context menu, and when you click it, it will set the app's start folder to which ever folder you opened the app in (This is processed in Application_Startup() in App.xaml.cs using StartupEventArgs)
+
