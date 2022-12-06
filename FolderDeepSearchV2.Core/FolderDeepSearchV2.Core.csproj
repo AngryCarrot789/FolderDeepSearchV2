@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="REghZy.MVVM">
+      <HintPath>..\..\REghZy\DLL\REghZy.MVVM.dll</HintPath>
+    </Reference>
+    <Reference Include="REghZy.MVVM.Framework">
+      <HintPath>..\..\REghZy\DLL\REghZy.MVVM.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="REghZy.Utils">
+      <HintPath>..\..\REghZy\DLL\REghZy.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="REghZy.WPF">
+      <HintPath>..\..\REghZy\DLL\REghZy.WPF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Icons" />
+  </ItemGroup>
+
+</Project>
