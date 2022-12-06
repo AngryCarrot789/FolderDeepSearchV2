@@ -14,9 +14,6 @@ On the right of the screen is a toggle button, which opens a menu, which contain
 - Search folder names
 - Search file names
 - Search file contents
-
-Searching file contents reads in chunks of 1024 bytes; does not load the entire file into memory. I wrote this to be as efficient as possible, using a fixed buffer size + size of the search term, and (n being the search term's string length) copies n number of chars from the end to the start, and when reading chars from files, begins at index n into the buffer. All of this in the case that the search term is split between 2 chunk reads
-
 - Enable/disable case sensitivity (disable by default; meaning, cases are ignored; "hElLO" matches "Hello")
 - Recursively search into folders (disabled by default; meaning, only the Start Folder is searched)
 - Ignore file extension (completely forgot what this does)
@@ -31,6 +28,12 @@ There are some shortcuts to toggling options, instead of having to use the menu 
 - CTRL + N - Toggle match when folder/file name starts with search term instead of containing it
 - CTRL + O - Shortcut for opening a folder
 - Pressing enter while the search term box is focused will begin the search
+
+## Extra details
+
+Searching file contents reads in chunks of 1024 bytes; does not load the entire file into memory. I wrote this to be as efficient as possible, using a fixed buffer size + size of the search term, and (n being the search term's string length) copies n number of chars from the end to the start, and when reading chars from files, begins at index n into the buffer. All of this in the case that the search term is split between 2 chunk reads
+
+Icon fetching is done mostly asynchronously, via the FileIconService. A "queued icon" is added to a concurrent queue. Those queues are then processed by a thread (which spends 10ms sleeping per tick, likely more due to thread time slicing). The actual icon resolution is performed on the main thread (via the dispatcher), due to the implications of creating Bitmaps outside of the main thread. Those bitmaps are then stored in an updateQueue, which are processed on another thread and finally delivered via the main thread using the dispatcher again
 
 ## Adding to windows context menus
 
