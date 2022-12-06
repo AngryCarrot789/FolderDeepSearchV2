@@ -22,6 +22,10 @@ namespace FolderDeepSearchV2.Services {
             }
         }
 
+        public Task ShowAsync(string caption, string message) {
+            return Application.Current.Dispatcher.InvokeAsync(() => MessageBox.Show(message, caption)).Task;
+        }
+
         private static void RunOnThreadUI(Action action) {
             TaskCompletionSource<bool> result = new TaskCompletionSource<bool>();
             Application.Current.Dispatcher.Invoke(() => {

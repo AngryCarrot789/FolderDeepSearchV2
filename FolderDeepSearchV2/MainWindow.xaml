@@ -21,6 +21,9 @@
     </windows:WindowBase.Resources>
     <Window.InputBindings>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding SelectDirectoryCommand, Mode=OneTime}"/>
+        <KeyBinding Key="B" Modifiers="Ctrl" Command="{Binding ToggleCaseSensitivityCommand, Mode=OneTime}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ToggleResursiveSearchCommand, Mode=OneTime}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding ToggleNameStartsWithCommand, Mode=OneTime}"/>
     </Window.InputBindings>
     <Grid d:DataContext="{x:Static searching:FolderSearchViewModel.MockViewModel}">
         <Grid.Resources>
@@ -38,7 +41,7 @@
                 BorderThickness="1 0 0 0" HorizontalAlignment="Right" Width="20" 
                 BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" Margin="0,0,0,20">
             <Grid>
-                <ToggleButton IsChecked="False" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
+                <ToggleButton IsChecked="True" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
                     <TextBlock Text="Search Settings" Width="88" Height="18" FontSize="13" Margin="1 0 0 0" SnapsToDevicePixels="True">
                         <TextBlock.LayoutTransform>
                             <TransformGroup>
@@ -56,7 +59,8 @@
                     Visibility="{Binding ElementName=ClassListToggle, Path=IsChecked, Converter={StaticResource T2V_F2C}}" 
                     Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}" 
                     BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}"
-                    BorderThickness="1 1 0 0" Width="170">
+                    BorderThickness="1 1 0 0" Width="170"
+                    IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}">
                 <Grid Margin="5,5,5,0">
                     <Border VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource AREghZyBrush.Deep.3.Border.Static}" BorderThickness="0 0 0 1">
                         <TextBlock Text="Search targets" Padding="5 0 5 1" TextAlignment="Center"/>
@@ -73,6 +77,10 @@
                     <CheckBox IsChecked="{Binding SearchRecursively}" Content="Search Recursively" Margin="0,131,12,0" VerticalAlignment="Top" Height="20" ToolTip="Searches deep into each folder until no more folders are found"/>
                     <CheckBox IsChecked="{Binding IgnoreFileExtension}" Content="Ignore file extension" Margin="0,151,12,0" VerticalAlignment="Top" Height="20" ToolTip="Ignores the file extension part of the file names while searching"/>
                     <CheckBox IsChecked="{Binding NameStartsWithTerm}" Content="Name starts with term" Margin="0,171,12,0" VerticalAlignment="Top" Height="20" ToolTip="If checked, the search will pass if the file/directory name starts with the search term. Otherwise, if it contains the search term"/>
+                    <CheckBox IsChecked="{Binding IgnoreSecurityErrors}" Content="Ignore security errors" Margin="0,219,0,0" VerticalAlignment="Top" Height="20" ToolTip="Some folders may be inaccessible. If this option is checked, then those inaccessible folders are ignored. If the option is not checked, the search will be stopped if an inaccessible folder is reached"/>
+                    <Border VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource AREghZyBrush.Deep.3.Border.Static}" BorderThickness="0 0 0 1" Margin="0,196,0,0">
+                        <TextBlock Text="Error handling" Padding="5 0 5 1" TextAlignment="Center"/>
+                    </Border>
                 </Grid>
             </Border>
             <Grid Margin="0,0,0,0" DockPanel.Dock="Left">

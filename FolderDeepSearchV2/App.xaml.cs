@@ -28,6 +28,9 @@ namespace FolderDeepSearchV2 {
                 if (Directory.Exists(cmdLine)) {
                     directory = cmdLine;
                 }
+                else if (File.Exists(cmdLine)) {
+                    directory = Path.GetDirectoryName(cmdLine);
+                }
                 else {
                     ServiceManager.Get<IDialogMessages>().Show("Cannot open non-existent directory", "No such directory: " + cmdLine);
                 }
@@ -39,7 +42,7 @@ namespace FolderDeepSearchV2 {
             this.MainWindow = new MainWindow();
 
             FolderSearchViewModel vm = new FolderSearchViewModel();
-            vm.TargetDirectory = directory ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            vm.TargetDirectory = string.IsNullOrWhiteSpace(directory) ? Environment.GetFolderPath(Environment.SpecialFolder.Desktop) : directory;
             this.MainWindow.DataContext = vm;
             this.MainWindow.Show();
         }

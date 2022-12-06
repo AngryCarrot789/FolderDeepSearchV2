@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -74,13 +77,28 @@ namespace FolderDeepSearchV2.Core.Searching {
         private bool isSearching;
         public bool IsSearching {
             get => this.isSearching;
-            set => this.RaisePropertyChanged(ref this.isSearching, value);
+            set {
+                this.RaisePropertyChanged(ref this.isSearching, value);
+                // Cannot do this; a deadlock is risked
+                // ServiceManager.App.Invoke(() => {
+                //     this.SelectDirectoryCommand.RaiseCanExecuteChanged();
+                //     this.ToggleCaseSensitivityCommand.RaiseCanExecuteChanged();
+                //     this.ToggleResursiveSearchCommand.RaiseCanExecuteChanged();
+                //     this.ToggleNameStartsWithCommand.RaiseCanExecuteChanged();
+                // });
+            }
         }
 
         private bool nameStartsWithTerm;
         public bool NameStartsWithTerm {
             get => this.nameStartsWithTerm;
             set => this.RaisePropertyChanged(ref this.nameStartsWithTerm, value);
+        }
+
+        private bool ignoreSecurityErrors;
+        public bool IgnoreSecurityErrors {
+            get => this.ignoreSecurityErrors;
+            set => this.RaisePropertyChanged(ref this.ignoreSecurityErrors, value);
         }
 
         public ResultListViewModel ResultList { get; }
@@ -90,6 +108,10 @@ namespace FolderDeepSearchV2.Core.Searching {
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
         public ICommand SelectDirectoryCommand { get; }
+
+        public ICommand ToggleCaseSensitivityCommand { get; }
+        public ICommand ToggleResursiveSearchCommand { get; }
+        public ICommand ToggleNameStartsWithCommand { get; }
 
         private string currentPath;
         public string CurrentPath {
@@ -102,10 +124,23 @@ namespace FolderDeepSearchV2.Core.Searching {
         private volatile Task searchTask;
 
         public FolderSearchViewModel() {
+            this.ToggleCaseSensitivityCommand = new RelayCommand(() => {
+                if (!this.IsSearching)
+                    this.CaseSensitive = !this.CaseSensitive;
+            });
+            this.ToggleResursiveSearchCommand = new RelayCommand(() => {
+                if (!this.IsSearching)
+                    this.SearchRecursively = !this.SearchRecursively;
+            });
+            this.ToggleNameStartsWithCommand = new RelayCommand(() => {
+                if (!this.IsSearching)
+                    this.NameStartsWithTerm = !this.NameStartsWithTerm;
+            });
+
             this.StartCommand = new RelayCommand(this.StartSearchAction);
             this.StopCommand = new RelayCommand(this.StopSearchAction);
             this.SelectDirectoryCommand = new RelayCommand(() => {
-                if (ServiceManager.IoDialogs.SelectFolder(this.TargetDirectory, out string folder)) {
+                if (!this.IsSearching && ServiceManager.IoDialogs.SelectFolder(this.TargetDirectory, out string folder)) {
                     this.TargetDirectory = folder;
                 }
             });
@@ -114,6 +149,8 @@ namespace FolderDeepSearchV2.Core.Searching {
 
             this.SearchRecursively = false;
             this.IgnoreFileExtension = true;
+
+            this.IgnoreSecurityErrors = true;
 
             this.Progress = new ProgressViewModel(this);
             this.ResultList = new ResultListViewModel(this);
@@ -155,6 +192,18 @@ namespace FolderDeepSearchV2.Core.Searching {
                 catch (SearchCancelledException) {
                     // ignored; but throw for any other type
                 }
+                catch (Exception e) {
+                    // Crash in debug mode
+                    // Display error at runtime
+#if DEBUG
+                    ServiceManager.App.Invoke(() => throw new Exception("Failed to search", e));
+#else
+                    ServiceManager.Messages.Show("Failed to search", 
+                        "An error occoured while searching. \n" +
+                        e.Message + "\n" +
+                        e.StackTrace);
+#endif
+                }
                 finally {
                     this.IsSearching = false;
                 }
@@ -181,7 +230,28 @@ namespace FolderDeepSearchV2.Core.Searching {
 
             this.CurrentPath = directory;
             bool names = this.searchFolderNames;
-            foreach (string path in Directory.EnumerateDirectories(directory)) {
+
+            IEnumerable<string> folders;
+            try {
+                folders = Directory.EnumerateDirectories(directory);
+            }
+            catch (PathTooLongException e) {
+                ServiceManager.Messages.Show("Path is too long", "Failed to get directory enumerator for " + directory + "\n" + e.Message);
+                throw new SearchCancelledException();
+            }
+            catch (UnauthorizedAccessException e) {
+                if (this.IgnoreSecurityErrors) {
+                    // simple way of bypassing the folder search
+                    // cba to implement a better way :----)
+                    folders = Enumerable.Empty<string>();
+                }
+                else {
+                    ServiceManager.Messages.Show("Folder inaccessible", "Failed to get directory enumerator for " + directory + "\n" + e.Message);
+                    throw new SearchCancelledException();
+                }
+            }
+
+            foreach (string path in folders) {
                 if (token.IsCancellationRequested) {
                     throw new SearchCancelledException();
                 }
@@ -220,7 +290,27 @@ namespace FolderDeepSearchV2.Core.Searching {
             bool ignoreType = this.ignoreFileExtension;
             bool ignoreCase = !this.caseSensitive;
 
-            foreach (string file in Directory.EnumerateFiles(directory)) {
+            IEnumerable<string> files;
+            try {
+                files = Directory.EnumerateFiles(directory);
+            }
+            catch (PathTooLongException e) {
+                ServiceManager.Messages.Show("Path is too long", "Failed to get file enumerator for " + directory + "\n" + e.Message);
+                throw new SearchCancelledException();
+            }
+            catch (UnauthorizedAccessException e) {
+                if (this.IgnoreSecurityErrors) {
+                    // simple way of bypassing the folder search
+                    // cba to implement a better way :----)
+                    files = Enumerable.Empty<string>();
+                }
+                else {
+                    ServiceManager.Messages.Show("Folder inaccessible", "Failed to get file enumerator for " + directory + "\n" + e.Message);
+                    throw new SearchCancelledException();
+                }
+            }
+
+            foreach (string file in files) {
                 if (token.IsCancellationRequested) {
                     throw new SearchCancelledException();
                 }
