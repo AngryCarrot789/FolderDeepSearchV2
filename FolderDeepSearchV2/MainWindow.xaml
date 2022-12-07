@@ -41,7 +41,7 @@
                 BorderThickness="1 0 0 0" HorizontalAlignment="Right" Width="20" 
                 BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" Margin="0,0,0,20">
             <Grid>
-                <ToggleButton IsChecked="True" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
+                <ToggleButton IsChecked="False" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
                     <TextBlock Text="Search Settings" Width="88" Height="18" FontSize="13" Margin="1 0 0 0" SnapsToDevicePixels="True">
                         <TextBlock.LayoutTransform>
                             <TransformGroup>
