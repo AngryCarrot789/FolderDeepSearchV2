@@ -18,6 +18,7 @@
         PreviewKeyDown="WindowBase_KeyDown" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}"
         Icon="Resources/icons8-search-48.png">
     <windows:WindowBase.Resources>
+        <conv:BooleanConverter x:Key="InvertBool" TrueValue="False" FalseValue="True"/>
     </windows:WindowBase.Resources>
     <Window.InputBindings>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding SelectDirectoryCommand, Mode=OneTime}"/>
@@ -90,7 +91,7 @@
                     <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" Text="{Binding TargetDirectory, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Padding="3" Margin="74,31,25,0" VerticalContentAlignment="Center" Height="26" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"/>
                     <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" 
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             VerticalAlignment="Top" Padding="3" Margin="74,0,105,0" VerticalContentAlignment="Center" Height="27" 
+                             VerticalAlignment="Top" Padding="3" Margin="74,0,150,0" VerticalContentAlignment="Center" Height="27" 
                              BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
                              ToolTip="The value to use to match files and folders" x:Name="SearchTermBox">
                         <TextBox.InputBindings>
@@ -151,6 +152,17 @@
                                 BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
                                 ToolTip="Starts the search" Grid.Column="2" Background="#FFA42020"/>
                     </Grid>
+                    <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" 
+                             Text="{Binding SearchTermExtension, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Top" Padding="3" Margin="0,0,105,0" VerticalContentAlignment="Center" Height="27" 
+                             BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
+                             ToolTip="The value to use to match files and folders" x:Name="SearchTermBox_Copy" HorizontalAlignment="Right" Width="40">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding StartCommand, Mode=OneTime}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock Text="." VerticalAlignment="Top" TextAlignment="Center" Margin="0,8,145,0" Height="13" ToolTip="The value to use to match files and folders" HorizontalAlignment="Right" Width="5">
+                    </TextBlock>
                 </Grid>
                 <Grid Margin="0,67,0,0">
                     <Grid DataContext="{Binding ResultList}">
@@ -198,7 +210,16 @@
                         <Border VerticalAlignment="Top" HorizontalAlignment="Left" Height="21" Width="80" BorderThickness="0 1 1 1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}">
                             <TextBlock Text="Results" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <Button Command="{Binding SortByTypeCommand, Mode=OneTime}" VerticalAlignment="Top" Content="Sort folder-file" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,284,0"/>
+                        <Border VerticalAlignment="Top" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,284,0">
+                            <TextBlock Text="Sort by..." HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Right click to show a context menu, showing all the other sorting options"/>
+                            <Border.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Sort by folder to file (does not sort names)" Command="{Binding SortByTypeCommand, Mode=OneTime}"/>
+                                    <MenuItem Header="Sort by file extension (A-Z)" Command="{Binding SortByExtensionCommand, Mode=OneTime}"/>
+                                    <MenuItem Header="Sort by file name (not path) (A-Z)" Command="{Binding SortByNameCommand, Mode=OneTime}"/>
+                                </ContextMenu>
+                            </Border.ContextMenu>
+                        </Border>
                         <Button Command="{Binding SortByNameACommand, Mode=OneTime}" VerticalAlignment="Top" Content="Sort (A-Z)" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,179,0"/>
                         <Button Command="{Binding SortByNameBCommand, Mode=OneTime}" VerticalAlignment="Top" Content="Sort (Z-A)" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,74,0"/>
                         <Button Command="{Binding ClearCommand, Mode=OneTime}" VerticalAlignment="Top" Content="Clear" HorizontalAlignment="Right" Height="21" Width="64" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,5,0"/>

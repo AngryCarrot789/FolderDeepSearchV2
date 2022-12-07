@@ -19,6 +19,8 @@ namespace FolderDeepSearchV2.Core.Searching {
         public ICommand SortByNameACommand { get; }
         public ICommand SortByNameBCommand { get; }
         public ICommand SortByTypeCommand { get; }
+        public ICommand SortByExtensionCommand { get; }
+        public ICommand SortByNameCommand { get; }
 
         private readonly Queue<BaseResultViewModel> resultQueue;
 
@@ -35,33 +37,10 @@ namespace FolderDeepSearchV2.Core.Searching {
             this.SortByNameACommand = new RelayCommand(() => this.Sort(true));
             this.SortByNameBCommand = new RelayCommand(() => this.Sort(false));
 
-            this.SortByTypeCommand = new RelayCommand(() => {
-                lock (this.collectionLock) {
-                    this.TickAddResults(this.resultQueue.Count);
-                    List<BaseResultViewModel> list = new List<BaseResultViewModel>(this.Results);
-                    list.Sort((a, b) => {
-                        if (a is FolderResultViewModel) {
-                            if (b is FolderResultViewModel) {
-                                return 0;
-                            }
-                            else {
-                                return -1;
-                            }
-                        }
-                        else if (b is FolderResultViewModel) {
-                            return 1;
-                        }
-                        else {
-                            return 0;
-                        }
-                    });
+            this.SortByTypeCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFolder));
+            this.SortByExtensionCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFolderAndFileExtension));
+            this.SortByNameCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFileName));
 
-                    this.Results.Clear();
-                    foreach (BaseResultViewModel result in list) {
-                        this.Results.Add(result);
-                    }
-                }
-            });
             Task.Run(async () => {
                 IAppProxy app = ServiceManager.App;
                 while (app.IsRunning()) {
@@ -69,6 +48,18 @@ namespace FolderDeepSearchV2.Core.Searching {
                     await Task.Delay(100);
                 }
             });
+        }
+
+        private void Sort(Comparison<BaseResultViewModel> comparer) {
+            lock (this.collectionLock) {
+                this.TickAddResults(this.resultQueue.Count);
+                List<BaseResultViewModel> list = new List<BaseResultViewModel>(this.Results);
+                list.Sort(comparer);
+                this.Results.Clear();
+                foreach (BaseResultViewModel result in list) {
+                    this.Results.Add(result);
+                }
+            }
         }
 
         private void TickAddResults() {

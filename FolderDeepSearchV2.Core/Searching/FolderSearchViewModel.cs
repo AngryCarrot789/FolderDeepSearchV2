@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Xml;
 using FolderDeepSearchV2.Core.Searching.Results;
 using FolderDeepSearchV2.Core.Services;
 using REghZy.MVVM.Commands;
@@ -36,6 +34,22 @@ namespace FolderDeepSearchV2.Core.Searching {
         public string SearchTerm {
             get => this.searchTerm;
             set => this.RaisePropertyChanged(ref this.searchTerm, value);
+        }
+
+        private string searchTermExtension;
+        public string SearchTermExtension {
+            get => this.searchTermExtension;
+            set {
+                if (value != null && value.Length > 0 && value[0] == '.') {
+                    value = value.Substring(1);
+                }
+
+                this.RaisePropertyChanged(ref this.searchTermExtension, value);
+
+                if (this.ignoreFileExtension && value != null && value.Length > 0) {
+                    this.IgnoreFileExtension = false;
+                }
+            }
         }
 
         private bool searchFolderNames;
@@ -251,14 +265,17 @@ namespace FolderDeepSearchV2.Core.Searching {
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(this.searchTermExtension)) {
+                names = false;
+            }
+
             foreach (string path in folders) {
                 if (token.IsCancellationRequested) {
                     throw new SearchCancelledException();
                 }
 
-                string name = Path.GetFileName(path) ?? path; // just in case
                 if (names) {
-                    if (this.MatchName(name, term, FileType.Directory)) {
+                    if (this.MatchName(path, term, FileType.Directory, true)) {
                         this.ResultList.AppendResult(new FolderResultViewModel(path));
                     }
                 }
@@ -316,8 +333,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                 }
 
                 if (names) {
-                    string target = (ignoreType ? Path.GetFileNameWithoutExtension(file) : Path.GetFileName(file)) ?? file; // just in case
-                    if (this.MatchName(target, term, FileType.File)) {
+                    if (this.MatchName(file, term, FileType.File, ignoreType)) {
                         this.ResultList.AppendResult(new FileResultViewModel(file));
                         continue;
                     }
@@ -457,15 +473,61 @@ namespace FolderDeepSearchV2.Core.Searching {
             return -1;
         }
 
-        private bool MatchName(string source, string search, FileType type) {
-            if (this.caseSensitive) {
-                return this.nameStartsWithTerm ? source.StartsWith(search) : source.Contains(search);
-            }
-            else if (this.nameStartsWithTerm) {
-                return source.StartsWith(search, StringComparison.CurrentCultureIgnoreCase);
+        private bool MatchName(string path, string term, FileType type, bool ignoreExtension) {
+            if (ignoreExtension) {
+                string search = Path.GetFileNameWithoutExtension(path);
+                if (this.caseSensitive) {
+                    return this.nameStartsWithTerm ? search.StartsWith(term) : search.Contains(term);
+                }
+                else if (this.nameStartsWithTerm) {
+                    return search.StartsWith(term, StringComparison.CurrentCultureIgnoreCase);
+                }
+                else {
+                    return search.IndexOf(term, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+                }
             }
             else {
-                return source.IndexOf(search, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+                string fileName = Path.GetFileName(path);
+                if (string.IsNullOrEmpty(fileName)) {
+                    return term == "";
+                }
+
+                bool result;
+                if (this.caseSensitive) {
+                    result = this.nameStartsWithTerm ? fileName.StartsWith(term) : fileName.Contains(term);
+                }
+                else if (this.nameStartsWithTerm) {
+                    result = fileName.StartsWith(term, StringComparison.CurrentCultureIgnoreCase);
+                }
+                else {
+                    result = fileName.IndexOf(term, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+                }
+
+                if (result) {
+                    string searchExtension = this.searchTermExtension;
+                    if (string.IsNullOrWhiteSpace(searchExtension)) {
+                        return true;
+                    }
+
+                    if (type != FileType.File) {
+                        return false;
+                    }
+
+                    string extension = Path.GetExtension(fileName);
+                    if (string.IsNullOrEmpty(extension)) {
+                        return true;
+                    }
+
+                    if (this.caseSensitive) {
+                        return extension.Contains(searchExtension);
+                    }
+                    else {
+                        return extension.IndexOf(searchExtension, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+                    }
+                }
+                else {
+                    return false;
+                }
             }
         }
     }
