@@ -40,13 +40,13 @@ namespace FolderDeepSearchV2.Core.Searching {
         public string SearchTermExtension {
             get => this.searchTermExtension;
             set {
-                if (value != null && value.Length > 0 && value[0] == '.') {
+                if (!string.IsNullOrEmpty(value) && value[0] == '.') {
                     value = value.Substring(1);
                 }
 
                 this.RaisePropertyChanged(ref this.searchTermExtension, value);
 
-                if (this.ignoreFileExtension && value != null && value.Length > 0) {
+                if (this.ignoreFileExtension && !string.IsNullOrEmpty(value)) {
                     this.IgnoreFileExtension = false;
                 }
             }
@@ -93,6 +93,11 @@ namespace FolderDeepSearchV2.Core.Searching {
             get => this.isSearching;
             set {
                 this.RaisePropertyChanged(ref this.isSearching, value);
+                if (value) {
+                    this.TotalFileCount = 0;
+                    this.TotalFolderCount = 0;
+                }
+
                 // Cannot do this; a deadlock is risked
                 // ServiceManager.App.Invoke(() => {
                 //     this.SelectDirectoryCommand.RaiseCanExecuteChanged();
@@ -133,6 +138,18 @@ namespace FolderDeepSearchV2.Core.Searching {
             set => this.RaisePropertyChanged(ref this.currentPath, value);
         }
 
+        private int totalFileCount;
+        public int TotalFileCount {
+            get => this.totalFileCount;
+            set => this.RaisePropertyChanged(ref this.totalFileCount, value);
+        }
+
+        private int totalFolderCount;
+        public int TotalFolderCount {
+            get => this.totalFolderCount;
+            set => this.RaisePropertyChanged(ref this.totalFolderCount, value);
+        }
+
         private volatile CancellationTokenSource cancellation;
 
         private volatile Task searchTask;
@@ -161,7 +178,7 @@ namespace FolderDeepSearchV2.Core.Searching {
             this.SearchFileNames = true;
             this.SearchFolderNames = true;
 
-            this.SearchRecursively = false;
+            this.SearchRecursively = true;
             this.IgnoreFileExtension = true;
 
             this.IgnoreSecurityErrors = true;
@@ -287,6 +304,8 @@ namespace FolderDeepSearchV2.Core.Searching {
                 if (deep) {
                     this.SearchDirectory(path, term, true, in token);
                 }
+
+                this.TotalFolderCount++;
             }
 
             if (token.IsCancellationRequested) {
@@ -341,11 +360,11 @@ namespace FolderDeepSearchV2.Core.Searching {
 
                 if (contents) {
                     this.CurrentPath = file;
-                    const int size = 1024;
+                    const int size = 16384;
                     int offset = term.Length;
                     char[] buffer = new char[size + offset]; // 9 with "hello"
                     int length = buffer.Length;
-                    using (StreamReader reader = new StreamReader(new BufferedStream(File.OpenRead(file), 2048))) {
+                    using (StreamReader reader = new StreamReader(File.OpenRead(file))) {
                         // size = 4, term = "89", buffer = 6 long
                         // iteration0: 0,1,2,3,4,5
                         // iteration1: 4,5,6,7,8,9
@@ -400,6 +419,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                     }
                 }
 
+                this.TotalFileCount++;
                 fileLoopEnd: ;
             }
         }

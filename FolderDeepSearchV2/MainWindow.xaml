@@ -34,13 +34,31 @@
             <conv:PathToNameConverter x:Key="Path2Name"/>
         </Grid.Resources>
 
-        <Border Height="21" VerticalAlignment="Bottom" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 1 0 0">
-            <TextBlock Text="{Binding CurrentPath, FallbackValue=[Current directory being searched]}" VerticalAlignment="Center" Padding="5 2 2 2" Margin="0" HorizontalAlignment="Stretch"/>
+        <Border Height="40" VerticalAlignment="Bottom" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 1 0 0">
+            <Grid>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock DockPanel.Dock="Right" Padding="5,0" VerticalAlignment="Center" Grid.Column="0">
+                        <Run Text="Folders Searched:"/>
+                        <Run Text="{Binding TotalFolderCount}"/>
+                    </TextBlock>
+                    <TextBlock DockPanel.Dock="Right" Padding="5,0" VerticalAlignment="Center" Grid.Column="1">
+                        <Run Text="Files Processed:"/>
+                        <Run Text="{Binding TotalFileCount}"/>
+                    </TextBlock>
+                </Grid>
+                <TextBlock Text="Current File:" VerticalAlignment="Top" Padding="5,0,0,2" Margin="0,21,0,0" HorizontalAlignment="Left"/>
+                <TextBlock Text="{Binding CurrentPath}" 
+                           VerticalAlignment="Bottom" Padding="5,0,0,2" Margin="75,0,0,0"/>
+            </Grid>
         </Border>
 
         <Border Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" 
                 BorderThickness="1 0 0 0" HorizontalAlignment="Right" Width="20" 
-                BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" Margin="0,0,0,20">
+                BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" Margin="0,0,0,39">
             <Grid>
                 <ToggleButton IsChecked="False" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
                     <TextBlock Text="Search Settings" Width="88" Height="18" FontSize="13" Margin="1 0 0 0" SnapsToDevicePixels="True">
@@ -55,7 +73,7 @@
             </Grid>
         </Border>
 
-        <DockPanel Margin="0,0,20,21">
+        <DockPanel Margin="0,0,20,40">
             <Border DockPanel.Dock="Right" 
                     Visibility="{Binding ElementName=ClassListToggle, Path=IsChecked, Converter={StaticResource T2V_F2C}}" 
                     Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}" 
