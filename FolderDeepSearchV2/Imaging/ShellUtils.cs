@@ -114,7 +114,9 @@ namespace FolderDeepSearchV2.Imaging {
                     (uint) Marshal.SizeOf(typeof(SHFILEINFO)),
                     flags);
 
-            return success == IntPtr.Zero ? null : Icon.FromHandle(shfi.hIcon);
+            if (success == IntPtr.Zero || shfi.hIcon == IntPtr.Zero)
+                return null;
+            return Icon.FromHandle(shfi.hIcon);
         }
 
         public static BitmapSource GetFileIconAsBitmapSource(string path, IconType iconType = IconType.Normal, bool isDirectory = false) {
