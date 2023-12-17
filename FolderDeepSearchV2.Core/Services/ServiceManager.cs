@@ -5,7 +5,7 @@ namespace FolderDeepSearchV2.Core.Services {
     public static class ServiceManager {
         private static readonly Dictionary<Type, object> MAP;
 
-        public static IAppProxy App => Get<IAppProxy>();
+        public static IApplication App => Get<IApplication>();
         public static IDialogMessages Messages => Get<IDialogMessages>();
         public static IIODialogs IoDialogs => Get<IIODialogs>();
         public static IClipboard Clipboard => Get<IClipboard>();

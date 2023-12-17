@@ -238,7 +238,9 @@ namespace FolderDeepSearchV2.Core.Searching {
                 finally {
                     this.IsSearching = false;
                 }
-            });
+            }).ContinueWith(x => {
+                this.ResultList.InsertQueueIntoResultList();
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private Task RunSearchAsync(string directory, string search) {
@@ -293,7 +295,7 @@ namespace FolderDeepSearchV2.Core.Searching {
 
                 if (names) {
                     if (this.MatchName(path, term, FileType.Directory, true)) {
-                        this.ResultList.AppendResult(new FolderResultViewModel(path));
+                        this.ResultList.AddQueuedItem(new FolderResultViewModel(path));
                     }
                 }
 
@@ -353,7 +355,7 @@ namespace FolderDeepSearchV2.Core.Searching {
 
                 if (names) {
                     if (this.MatchName(file, term, FileType.File, ignoreType)) {
-                        this.ResultList.AppendResult(new FileResultViewModel(file));
+                        this.ResultList.AddQueuedItem(new FileResultViewModel(file));
                         continue;
                     }
                 }
@@ -377,7 +379,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                         }
 
                         if (IndexOf(buffer, term, 0, ignoreCase) != -1) {
-                            this.ResultList.AppendResult(new FileResultViewModel(file));
+                            this.ResultList.AddQueuedItem(new FileResultViewModel(file));
                             continue;
                         }
 
@@ -386,7 +388,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                         // reads iteration1, starting at offset (2), reading size (4) chars
                         while ((read = reader.Read(buffer, offset, size)) > 0) {
                             if (IndexOf(buffer, 0, read == size ? length : (read + offset), term, 0, term.Length, 0, ignoreCase) != -1) {
-                                this.ResultList.AppendResult(new FileResultViewModel(file));
+                                this.ResultList.AddQueuedItem(new FileResultViewModel(file));
                                 goto fileLoopEnd;
                             }
 

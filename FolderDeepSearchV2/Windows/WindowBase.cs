@@ -13,8 +13,8 @@ namespace FolderDeepSearchV2.Windows {
 
         [Category("Brush")]
         public Brush TitlebarColour {
-            get => (Brush) GetValue(TitlebarColourProperty);
-            set => SetValue(TitlebarColourProperty, value);
+            get => (Brush) this.GetValue(TitlebarColourProperty);
+            set => this.SetValue(TitlebarColourProperty, value);
         }
 
         protected WindowBase() {

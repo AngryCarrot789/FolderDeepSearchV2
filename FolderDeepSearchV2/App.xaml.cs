@@ -18,7 +18,7 @@ namespace FolderDeepSearchV2 {
             IS_RUNNING = true;
 
             ServiceManager.Set<IDialogMessages>(new WPFDialogMessages());
-            ServiceManager.Set<IAppProxy>(new WPFAppProxy());
+            ServiceManager.Set<IApplication>(new WpfApplication());
             ServiceManager.Set<IIODialogs>(new WPFIODialogs());
             ServiceManager.Set<IClipboard>(new CSClipboard());
 

@@ -1,4 +1,4 @@
-﻿<windows:WindowBase x:Class="FolderDeepSearchV2.MainWindow" 
+﻿<Window x:Class="FolderDeepSearchV2.MainWindow"
         xmlns:windows="clr-namespace:FolderDeepSearchV2.Windows"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,239 +11,189 @@
         xmlns:controls="clr-namespace:FolderDeepSearchV2.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="612.5" Width="600"
-        Style="{StaticResource CustomWindowBaseStyle}"
-        Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}"
         d:DataContext="{d:DesignInstance Type={x:Type searching:FolderSearchViewModel}}"
-        TitlebarColour="{DynamicResource AREghZyBrush.Primary.2.Border.Static}"
-        PreviewKeyDown="WindowBase_KeyDown" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}"
-        Icon="Resources/icons8-search-48.png">
-    <windows:WindowBase.Resources>
+        PreviewKeyDown="WindowBase_KeyDown"
+        Icon="Resources/icons8-search-48.png"
+        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+        ResizeMode="CanResizeWithGrip"
+        MinWidth="460" MinHeight="335">
+    <Window.Resources>
         <conv:BooleanConverter x:Key="InvertBool" TrueValue="False" FalseValue="True"/>
-    </windows:WindowBase.Resources>
+    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding SelectDirectoryCommand, Mode=OneTime}"/>
         <KeyBinding Key="B" Modifiers="Ctrl" Command="{Binding ToggleCaseSensitivityCommand, Mode=OneTime}"/>
         <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ToggleResursiveSearchCommand, Mode=OneTime}"/>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding ToggleNameStartsWithCommand, Mode=OneTime}"/>
     </Window.InputBindings>
-    <Grid d:DataContext="{x:Static searching:FolderSearchViewModel.MockViewModel}">
-        <Grid.Resources>
+    <DockPanel d:DataContext="{x:Static searching:FolderSearchViewModel.MockViewModel}">
+        <DockPanel.Resources>
             <conv:BooleanToVisibilityConverter x:Key="T2V_F2C" FalseValue="Collapsed"/>
             <conv:BooleanToVisibilityConverter x:Key="T2V_F2H" FalseValue="Hidden"/>
             <conv:BooleanConverter x:Key="InvertBool" TrueValue="False" FalseValue="True"/>
-            <conv:PathToNameConverter x:Key="Path2Name"/>
-        </Grid.Resources>
+        </DockPanel.Resources>
+        <Border DockPanel.Dock="Top" x:Name="TopPanelBorder">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Search For:"    Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock Text="Start Folder:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock Text="Targets:"        Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock Text="Preferences:"    Grid.Row="6" Grid.Column="0" VerticalAlignment="Center"/>
 
-        <Border Height="40" VerticalAlignment="Bottom" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 1 0 0">
-            <Grid>
-                <Grid Margin="0,0,0,16">
+                <Grid Grid.Row="0" Grid.Column="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock DockPanel.Dock="Right" Padding="5,0" VerticalAlignment="Center" Grid.Column="0">
-                        <Run Text="Folders Searched:"/>
-                        <Run Text="{Binding TotalFolderCount}"/>
-                    </TextBlock>
-                    <TextBlock DockPanel.Dock="Right" Padding="5,0" VerticalAlignment="Center" Grid.Column="1">
-                        <Run Text="Files Processed:"/>
-                        <Run Text="{Binding TotalFileCount}"/>
-                    </TextBlock>
-                </Grid>
-                <TextBlock Text="Current File:" VerticalAlignment="Top" Padding="5,0,0,2" Margin="0,21,0,0" HorizontalAlignment="Left"/>
-                <TextBlock Text="{Binding CurrentPath}" 
-                           VerticalAlignment="Bottom" Padding="5,0,0,2" Margin="75,0,0,0"/>
-            </Grid>
-        </Border>
-
-        <Border Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" 
-                BorderThickness="1 0 0 0" HorizontalAlignment="Right" Width="20" 
-                BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" Margin="0,0,0,39">
-            <Grid>
-                <ToggleButton IsChecked="False" x:Name="ClassListToggle" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Height="115" BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}" BorderThickness="0 0 0 1">
-                    <TextBlock Text="Search Settings" Width="88" Height="18" FontSize="13" Margin="1 0 0 0" SnapsToDevicePixels="True">
-                        <TextBlock.LayoutTransform>
-                            <TransformGroup>
-                                <RotateTransform Angle="-90" />
-                                <ScaleTransform ScaleX="-1" ScaleY="-1"/>
-                            </TransformGroup>
-                        </TextBlock.LayoutTransform>
-                    </TextBlock>
-                </ToggleButton>
-            </Grid>
-        </Border>
-
-        <DockPanel Margin="0,0,20,40">
-            <Border DockPanel.Dock="Right" 
-                    Visibility="{Binding ElementName=ClassListToggle, Path=IsChecked, Converter={StaticResource T2V_F2C}}" 
-                    Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}" 
-                    BorderBrush="{DynamicResource AREghZyBrush.Primary.4.Border.Static}"
-                    BorderThickness="1 1 0 0" Width="170"
-                    IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}">
-                <Grid Margin="5,5,5,0">
-                    <Border VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource AREghZyBrush.Deep.3.Border.Static}" BorderThickness="0 0 0 1">
-                        <TextBlock Text="Search targets" Padding="5 0 5 1" TextAlignment="Center"/>
-                    </Border>
-                    <CheckBox IsChecked="{Binding SearchFolderNames}" Content="Folder names" VerticalAlignment="Top" Height="20" ToolTip="Ignore cases while searching" Margin="0,23,12,0"/>
-                    <CheckBox IsChecked="{Binding SearchFileNames}" Content="File names" Margin="0,43,12,0" VerticalAlignment="Top" Height="20" ToolTip="Searches deep into each folder until no more folders are found"/>
-                    <CheckBox IsChecked="{Binding SearchFileContents}" Content="File contents" Margin="0,63,12,0" VerticalAlignment="Top" Height="20" ToolTip="Ignores the file extension part of the file names while searching"/>
-
-                    <Border VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource AREghZyBrush.Deep.3.Border.Static}" BorderThickness="0 0 0 1" Margin="0,88,0,0">
-                        <TextBlock Text="Search preferences" Padding="5 0 5 1" TextAlignment="Center"/>
-                    </Border>
-
-                    <CheckBox IsChecked="{Binding CaseSensitive}" Content="Case Sensitive" VerticalAlignment="Top" Height="20" ToolTip="Search is sensitive to cApItaLiSaTioN" Margin="0,111,12,0"/>
-                    <CheckBox IsChecked="{Binding SearchRecursively}" Content="Search Recursively" Margin="0,131,12,0" VerticalAlignment="Top" Height="20" ToolTip="Searches deep into each folder until no more folders are found"/>
-                    <CheckBox IsChecked="{Binding IgnoreFileExtension}" Content="Ignore file extension" Margin="0,151,12,0" VerticalAlignment="Top" Height="20" ToolTip="Ignores the file extension part of the file names while searching"/>
-                    <CheckBox IsChecked="{Binding NameStartsWithTerm}" Content="Name starts with term" Margin="0,171,12,0" VerticalAlignment="Top" Height="20" ToolTip="If checked, the search will pass if the file/directory name starts with the search term. Otherwise, if it contains the search term"/>
-                    <CheckBox IsChecked="{Binding IgnoreSecurityErrors}" Content="Ignore security errors" Margin="0,219,0,0" VerticalAlignment="Top" Height="20" ToolTip="Some folders may be inaccessible. If this option is checked, then those inaccessible folders are ignored. If the option is not checked, the search will be stopped if an inaccessible folder is reached"/>
-                    <Border VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource AREghZyBrush.Deep.3.Border.Static}" BorderThickness="0 0 0 1" Margin="0,196,0,0">
-                        <TextBlock Text="Error handling" Padding="5 0 5 1" TextAlignment="Center"/>
-                    </Border>
-                </Grid>
-            </Border>
-            <Grid Margin="0,0,0,0" DockPanel.Dock="Left">
-                <Grid Height="57" VerticalAlignment="Top" Margin="0,5,5,0">
-                    <TextBlock Text="Search for:" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="5 5 0 5" Width="74"/>
-                    <TextBlock Text="Start Folder:" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="5 5 0 5" Width="74" Margin="0,31,0,0"/>
-                    <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" Text="{Binding TargetDirectory, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Padding="3" Margin="74,31,25,0" VerticalContentAlignment="Center" Height="26" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"/>
-                    <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" 
-                             Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             VerticalAlignment="Top" Padding="3" Margin="74,0,150,0" VerticalContentAlignment="Center" Height="27" 
-                             BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
-                             ToolTip="The value to use to match files and folders" x:Name="SearchTermBox">
+                    <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                             Grid.Column="0" x:Name="SearchFieldTextBox"
+                             IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}"
+                             VerticalContentAlignment="Center" Padding="2,0">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding StartCommand, Mode=OneTime}"/>
                         </TextBox.InputBindings>
                     </TextBox>
-                    <Button IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" 
-                            Command="{Binding SelectDirectoryCommand, Mode=OneTime}" Content="..." 
-                            HorizontalAlignment="Right" Width="25" BorderThickness="0 1 1 1" Height="26" 
-                            VerticalAlignment="Top" Margin="0,31,0,0" ToolTip="Select a starting directory"
-                            BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"/>
-                    <Grid Height="27" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="3"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.Resources>
-                            <Style x:Key="MyButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type Button}">
-                                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
-                                                    Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
-                                                <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                                  Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" 
-                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsDefaulted" Value="true">
-                                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource Button.Defaulted.Border}" />
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="true">
-                                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource Button.MouseOver.Background}" />
-                                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource Button.MouseOver.Border}" />
-                                                </Trigger>
-                                                <Trigger Property="IsPressed" Value="true">
-                                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource Button.Pressed.Background}" />
-                                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource Button.Pressed.Border}" />
-                                                </Trigger>
-                                                <Trigger Property="IsEnabled" Value="false">
-                                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource Button.Disabled.Foreground}" />
-                                                    <Setter Property="Opacity" Value="0.4" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Grid.Resources>
-                        <Button Content="Start" IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}"  Style="{StaticResource MyButton}"
-                                Command="{Binding StartCommand, Mode=OneTime}" 
-                                BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
-                                ToolTip="Starts the search" Background="#FF20A420"/>
-                        <Button Content="Stop" IsEnabled="{Binding IsSearching}" Style="{StaticResource MyButton}"
-                                Command="{Binding StopCommand, Mode=OneTime}" 
-                                BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
-                                ToolTip="Starts the search" Grid.Column="2" Background="#FFA42020"/>
-                    </Grid>
-                    <TextBox IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}" 
-                             Text="{Binding SearchTermExtension, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Top" Padding="3" Margin="0,0,105,0" VerticalContentAlignment="Center" Height="27" 
-                             BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
-                             ToolTip="The value to use to match files and folders" x:Name="SearchTermBox_Copy" HorizontalAlignment="Right" Width="40">
+                    <TextBlock Text="." Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Padding="2,0"/>
+                    <TextBox Text="{Binding SearchTermExtension, UpdateSourceTrigger=PropertyChanged}"
+                             Grid.Column="2" MinWidth="40"
+                             MaxWidth="{Binding ElementName=SearchFieldTextBox, Path=RenderSize.Width}"
+                             IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}"
+                             VerticalContentAlignment="Center" Padding="2,0">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding StartCommand, Mode=OneTime}"/>
                         </TextBox.InputBindings>
                     </TextBox>
-                    <TextBlock Text="." VerticalAlignment="Top" TextAlignment="Center" Margin="0,8,145,0" Height="13" ToolTip="The value to use to match files and folders" HorizontalAlignment="Right" Width="5">
-                    </TextBlock>
+                    <Button Content="Start" Padding="5,2" Command="{Binding StartCommand, Mode=OneTime}" Grid.Column="4" VerticalAlignment="Stretch"
+                            IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}"/>
+                    <Button Content="Stop" Padding="5,2" Command="{Binding StopCommand, Mode=OneTime}" Grid.Column="6" VerticalAlignment="Stretch"
+                            IsEnabled="{Binding IsSearching}"/>
                 </Grid>
-                <Grid Margin="0,67,0,0">
-                    <Grid DataContext="{Binding ResultList}">
-                        <ListBox Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}" 
-                                 BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}"
-                                 BorderThickness="0 1 0 0" Margin="0,20,0,0"
-                                 ItemsSource="{Binding Results}"
-                                 ScrollViewer.CanContentScroll="False"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 HorizontalContentAlignment="Stretch" MouseDoubleClick="ListBox_MouseDoubleClick">
-                            <ListBox.Resources>
-                                <conv:FileSizeConverter x:Key="FileSizeConverter"/>
-                                <DataTemplate DataType="{x:Type results:FileResultViewModel}">
-                                    <Grid Height="44">
-                                        <Grid.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Open File" Command="{Binding OpenFileCommand}"/>
-                                                <MenuItem Header="Open containing folder" Command="{Binding OpenContainingFolderCommand}"/>
-                                                <MenuItem Header="Copy path" Command="{Binding CopyPathToClipboard}"/>
-                                            </ContextMenu>
-                                        </Grid.ContextMenu>
-                                        <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-                                        <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={StaticResource Path2Name}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
-                                        <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>
-                                        <TextBlock Text=".mp3" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,0,0" Width="40" Height="18"/>
-                                        <Button Command="{Binding CalculateSizeCommand, Mode=OneTime}" Content="{Binding CalculatedSize, Converter={StaticResource FileSizeConverter}}" Background="Transparent" BorderBrush="Transparent" ToolTip="Refresh the file size" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,44,0" Width="64" Height="18"/>
-                                    </Grid>
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type results:FolderResultViewModel}">
-                                    <Grid Height="44">
-                                        <Grid.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Open File" Command="{Binding OpenFolderCommand}"/>
-                                                <MenuItem Header="Open containing folder" Command="{Binding OpenContainingFolderCommand}"/>
-                                                <MenuItem Header="Copy path" Command="{Binding CopyPathToClipboard}"/>
-                                            </ContextMenu>
-                                        </Grid.ContextMenu>
-                                        <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-                                        <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={StaticResource Path2Name}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
-                                        <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.Resources>
-                        </ListBox>
-                        <Border VerticalAlignment="Top" HorizontalAlignment="Left" Height="21" Width="80" BorderThickness="0 1 1 1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}">
-                            <TextBlock Text="Results" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Border>
-                        <Border VerticalAlignment="Top" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,284,0">
-                            <TextBlock Text="Sort by..." HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Right click to show a context menu, showing all the other sorting options"/>
-                            <Border.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Sort by folder to file (does not sort names)" Command="{Binding SortByTypeCommand, Mode=OneTime}"/>
-                                    <MenuItem Header="Sort by file extension (A-Z)" Command="{Binding SortByExtensionCommand, Mode=OneTime}"/>
-                                    <MenuItem Header="Sort by file name (not path) (A-Z)" Command="{Binding SortByNameCommand, Mode=OneTime}"/>
-                                </ContextMenu>
-                            </Border.ContextMenu>
-                        </Border>
-                        <Button Command="{Binding SortByNameACommand, Mode=OneTime}" VerticalAlignment="Top" Content="Sort (A-Z)" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,179,0"/>
-                        <Button Command="{Binding SortByNameBCommand, Mode=OneTime}" VerticalAlignment="Top" Content="Sort (Z-A)" HorizontalAlignment="Right" Height="21" Width="100" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,74,0"/>
-                        <Button Command="{Binding ClearCommand, Mode=OneTime}" VerticalAlignment="Top" Content="Clear" HorizontalAlignment="Right" Height="21" Width="64" BorderThickness="1" BorderBrush="{DynamicResource AREghZyBrush.Primary.3.Border.Static}" Background="{DynamicResource AREghZyBrush.Primary.2.Background.Static}" Margin="0,0,5,0"/>
-                    </Grid>
+
+                <Grid Grid.Row="2" Grid.Column="2" IsEnabled="{Binding IsSearching, Converter={StaticResource InvertBool}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding TargetDirectory, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0"/>
+                    <Button Command="{Binding SelectDirectoryCommand, Mode=OneTime}" Content="..." Grid.Column="2" VerticalAlignment="Stretch" Padding="5,0"/>
                 </Grid>
+
+                <WrapPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="2">
+                    <CheckBox Content="Folder Names" Margin="0,0,5,0" IsChecked="{Binding SearchFolderNames}"/>
+                    <CheckBox Content="File Names" Margin="0,0,5,0" IsChecked="{Binding SearchFileNames}"/>
+                    <CheckBox Content="File Contents" Margin="0,0,5,0" IsChecked="{Binding SearchFileContents}"/>
+                </WrapPanel>
+
+                <WrapPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="2">
+                    <CheckBox Content="Case Sensitive" Margin="0,0,5,0" IsChecked="{Binding CaseSensitive}"/>
+                    <CheckBox Content="Recursive Search" Margin="0,0,5,0" IsChecked="{Binding SearchRecursively}"/>
+                    <CheckBox Content="Ignore File Extensions" Margin="0,0,5,0" IsChecked="{Binding IgnoreFileExtension}"/>
+                    <CheckBox Content="Use StartsWith" Margin="0,0,5,0" IsChecked="{Binding NameStartsWithTerm}"/>
+                </WrapPanel>
             </Grid>
+        </Border>
+        <Border DockPanel.Dock="Bottom">
+            <StackPanel Margin="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                        <TextBlock Text="Folders Searched: "/>
+                        <TextBlock Text="{Binding TotalFolderCount}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                        <TextBlock Text="Files Processed: "/>
+                        <TextBlock Text="{Binding TotalFileCount}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Column="2">
+                        <TextBlock Text="Results: "/>
+                        <TextBlock DataContext="{Binding ResultList.Results}" Text="{Binding Count}"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Current File: "/>
+                    <TextBlock Text="{Binding CurrentPath}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <DockPanel DataContext="{Binding ResultList}">
+            <DockPanel DockPanel.Dock="Top" LastChildFill="False" x:Name="ListPanelControlDockPanel">
+                <Button HorizontalAlignment="Left" Width="80" BorderThickness="1" IsHitTestVisible="False">
+                    <TextBlock Text="Results" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Button>
+                <Button HorizontalAlignment="Left" Width="100" BorderThickness="1">
+                    <TextBlock Text="Sort by..." HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Right click to show a context menu, showing all the other sorting options"/>
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Sort by folder to file (does not sort names)" Command="{Binding SortByTypeCommand, Mode=OneTime}"/>
+                            <MenuItem Header="Sort by file extension (A-Z)" Command="{Binding SortByExtensionCommand, Mode=OneTime}"/>
+                            <MenuItem Header="Sort by file name (not path) (A-Z)" Command="{Binding SortByNameCommand, Mode=OneTime}"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+                <Button DockPanel.Dock="Right" Command="{Binding ClearCommand, Mode=OneTime}" Content="Clear" HorizontalAlignment="Left" Width="64" BorderThickness="1"/>
+                <Button DockPanel.Dock="Right" Command="{Binding SortByNameBCommand, Mode=OneTime}" Content="Sort (Z-A)" HorizontalAlignment="Left" Width="100" BorderThickness="1"/>
+                <Button DockPanel.Dock="Right" Command="{Binding SortByNameACommand, Mode=OneTime}" Content="Sort (A-Z)" HorizontalAlignment="Left" Width="100" BorderThickness="1"/>
+            </DockPanel>
+            <ListBox BorderThickness="0,1"
+                     ItemsSource="{Binding Results, Mode=OneTime}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     HorizontalContentAlignment="Stretch" MouseDoubleClick="ListBox_MouseDoubleClick"
+                     VirtualizingStackPanel.IsVirtualizing="True"
+                     VirtualizingStackPanel.VirtualizationMode="Recycling"
+                     VirtualizingStackPanel.ScrollUnit="Pixel">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical" IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Resources>
+                    <ContextMenu x:Key="FileResultContextMenu" x:Shared="True">
+                        <MenuItem Header="Open File" Command="{Binding OpenFileCommand}"/>
+                        <MenuItem Header="Open containing folder" Command="{Binding OpenContainingFolderCommand}"/>
+                        <MenuItem Header="Copy path" Command="{Binding CopyPathToClipboard}"/>
+                    </ContextMenu>
+                    <conv:FileSizeConverter x:Key="FileSizeConverter"/>
+                    <DataTemplate DataType="{x:Type results:FileResultViewModel}">
+                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}">
+                            <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                            <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={x:Static conv:PathToNameConverter.Instance}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
+                            <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>
+                            <TextBlock Text="{Binding FilePath, Converter={x:Static conv:PathToExtensionConverter.Instance}}" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,0,0" Width="40" Height="18"/>
+                            <Button Command="{Binding CalculateSizeCommand, Mode=OneTime}" Content="{Binding CalculatedSize, Converter={StaticResource FileSizeConverter}}" ToolTip="Refresh the file size" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,44,0" Width="64" MinHeight="18"/>
+                        </Grid>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type results:FolderResultViewModel}">
+                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}">
+                            <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                            <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={x:Static conv:PathToNameConverter.Instance}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
+                            <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
         </DockPanel>
-    </Grid>
-</windows:WindowBase>
+    </DockPanel>
+</Window>

@@ -298,7 +298,7 @@ namespace FolderDeepSearchV2.Imaging {
 
             int res = SHGetFileInfo(path, 0, ref shinfo, Marshal.SizeOf(shinfo), flags);
             if (res == 0) {
-                throw new System.IO.FileNotFoundException();
+                throw new FileNotFoundException();
             }
 
             Icon myIcon = Icon.FromHandle(shinfo.hIcon);

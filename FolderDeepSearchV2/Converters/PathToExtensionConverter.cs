@@ -5,19 +5,15 @@ using System.Windows;
 using System.Windows.Data;
 
 namespace FolderDeepSearchV2.Converters {
-    public class PathToSizeConverter : IValueConverter {
+    public class PathToExtensionConverter : IValueConverter {
+        public static PathToExtensionConverter Instance { get; } = new PathToExtensionConverter();
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            if (value is string path) {
-                if (File.Exists(path)) {
-                    return new FileInfo(path).Length;
-                }
-                else {
-                    return -1;
-                }
+            if (value is string str) {
+                return Path.GetExtension(str);
             }
-            else {
-                return DependencyProperty.UnsetValue;
-            }
+
+            return DependencyProperty.UnsetValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

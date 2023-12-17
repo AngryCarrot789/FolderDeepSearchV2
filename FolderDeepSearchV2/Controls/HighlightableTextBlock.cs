@@ -42,28 +42,28 @@ namespace FolderDeepSearchV2.Controls {
                 new PropertyMetadata(-1, (d, e) => ((HighlightableTextBlock) d).OnIndexableSelectionChanged()));
 
         public Brush SelectionForeground {
-            get => (Brush) GetValue(SelectionForegroundProperty);
-            set => SetValue(SelectionForegroundProperty, value);
+            get => (Brush) this.GetValue(SelectionForegroundProperty);
+            set => this.SetValue(SelectionForegroundProperty, value);
         }
 
         public Brush SelectionBrush {
-            get => (Brush) GetValue(SelectionBrushProperty);
-            set => SetValue(SelectionBrushProperty, value);
+            get => (Brush) this.GetValue(SelectionBrushProperty);
+            set => this.SetValue(SelectionBrushProperty, value);
         }
 
         public string Selection {
-            get => (string) GetValue(SelectionProperty);
-            set => SetValue(SelectionProperty, value);
+            get => (string) this.GetValue(SelectionProperty);
+            set => this.SetValue(SelectionProperty, value);
         }
 
         public int SelectionStartIndex {
-            get => (int) GetValue(SelectionStartIndexProperty);
-            set => SetValue(SelectionStartIndexProperty, value);
+            get => (int) this.GetValue(SelectionStartIndexProperty);
+            set => this.SetValue(SelectionStartIndexProperty, value);
         }
 
         public int SelectionEndIndex {
-            get => (int) GetValue(SelectionEndIndexProperty);
-            set => SetValue(SelectionEndIndexProperty, value);
+            get => (int) this.GetValue(SelectionEndIndexProperty);
+            set => this.SetValue(SelectionEndIndexProperty, value);
         }
 
         public void SelectAllOccourences(string selection) {

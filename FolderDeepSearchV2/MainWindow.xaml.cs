@@ -8,9 +8,9 @@ namespace FolderDeepSearchV2 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : WindowBase {
+    public partial class MainWindow : Window {
         public MainWindow() {
-            InitializeComponent();
+            this.InitializeComponent();
 
             // CancellationTokenSource source = new CancellationTokenSource();
             // Task.Run(async () => {
@@ -35,8 +35,8 @@ namespace FolderDeepSearchV2 {
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
-            this.SearchTermBox.Focus();
-            this.SearchTermBox.SelectAll();
+            this.SearchFieldTextBox.Focus();
+            this.SearchFieldTextBox.SelectAll();
         }
 
         private void WindowBase_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
@@ -50,12 +50,15 @@ namespace FolderDeepSearchV2 {
         }
 
         private void ListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-            if (sender is ListBox list) {
-                if (list.SelectedItem is FileResultViewModel file) {
-                    file.OpenFileAction();
-                }
-                else if (list.SelectedItem is FolderResultViewModel folder) {
-                    folder.OpenFolderAction();
+            int index;
+            if (sender is ListBox list && (index = list.SelectedIndex) != -1) {
+                if (list.ItemContainerGenerator.ContainerFromIndex(index) is ListBoxItem item && item.IsMouseOver) {
+                    if (list.SelectedItem is FileResultViewModel file) {
+                        file.OpenFileAction();
+                    }
+                    else if (list.SelectedItem is FolderResultViewModel folder) {
+                        folder.OpenFolderAction();
+                    }
                 }
             }
         }

@@ -12,8 +12,8 @@ namespace FolderDeepSearchV2.Converters {
     public class FileSizeConverter : IValueConverter {
         public static readonly string[] SUFFIXES = { " B ", " KB", " MB", " GB", " TB", " PB", " EB" };
 
-        [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
-        public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
+        // [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
+        // public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
         public int RoundedPlaces { get; set; } = 2;
 

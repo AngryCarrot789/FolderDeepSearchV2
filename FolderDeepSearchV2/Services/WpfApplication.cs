@@ -4,9 +4,13 @@ using System.Windows.Threading;
 using FolderDeepSearchV2.Core.Services;
 
 namespace FolderDeepSearchV2.Services {
-    public class WPFAppProxy : IAppProxy {
+    public class WpfApplication : IApplication {
         public void Invoke(Action action) {
             Application.Current.Dispatcher.Invoke(action);
+        }
+
+        public void InvokeAsync(Action action) {
+            Application.Current.Dispatcher.InvokeAsync(action);
         }
 
         public bool IsRunning() {

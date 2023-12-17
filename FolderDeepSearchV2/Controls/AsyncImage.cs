@@ -19,13 +19,13 @@ namespace FolderDeepSearchV2.Controls {
                 new PropertyMetadata(IconType.Normal));
 
         public string FilePath {
-            get => (string) GetValue(FilePathProperty);
-            set => SetValue(FilePathProperty, value);
+            get => (string) this.GetValue(FilePathProperty);
+            set => this.SetValue(FilePathProperty, value);
         }
 
         public IconType IconType {
-            get => (IconType) GetValue(IconTypeProperty);
-            set => SetValue(IconTypeProperty, value);
+            get => (IconType) this.GetValue(IconTypeProperty);
+            set => this.SetValue(IconTypeProperty, value);
         }
 
         public bool IsValid => true;
@@ -33,7 +33,7 @@ namespace FolderDeepSearchV2.Controls {
         private bool triggerUpdateOnLoad;
 
         public AsyncImage() {
-            this.Loaded += OnControlLoaded;
+            this.Loaded += this.OnControlLoaded;
         }
 
         public void FetchIcon() {
@@ -49,7 +49,7 @@ namespace FolderDeepSearchV2.Controls {
         private void OnControlLoaded(object sender, RoutedEventArgs e) {
             if (this.triggerUpdateOnLoad) {
                 this.triggerUpdateOnLoad = false;
-                FetchIcon();
+                this.FetchIcon();
             }
         }
 
@@ -58,7 +58,7 @@ namespace FolderDeepSearchV2.Controls {
                 return;
             }
 
-            FetchIcon();
+            this.FetchIcon();
         }
     }
 }

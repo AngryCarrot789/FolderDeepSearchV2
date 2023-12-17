@@ -79,19 +79,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\AsyncImage.cs" />
-    <Compile Include="Controls\DummyUC.xaml.cs">
-      <DependentUpon>DummyUC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\HighlightableTextBlock.cs" />
-    <Compile Include="Controls\spohag.xaml.cs">
-      <DependentUpon>spohag.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\BooleanConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Converters\CollectionTypeCountConverter.cs" />
     <Compile Include="Converters\FileSizeConverter.cs" />
+    <Compile Include="Converters\PathToExtensionConverter.cs" />
     <Compile Include="Converters\PathToNameConverter.cs" />
-    <Compile Include="Converters\PathToSizeConverter.cs" />
     <Compile Include="Imaging\CSIDL.cs" />
     <Compile Include="Imaging\FileIconService.cs" />
     <Compile Include="Imaging\IconFetch.cs" />
@@ -101,7 +94,7 @@
     <Compile Include="Imaging\ShellEx.cs" />
     <Compile Include="Imaging\ShellUtils.cs" />
     <Compile Include="Services\CSClipboard.cs" />
-    <Compile Include="Services\WPFAppProxy.cs" />
+    <Compile Include="Services\WpfApplication.cs" />
     <Compile Include="Services\WpfDialogMessageses.cs" />
     <Compile Include="Services\WPFIODialogs.cs" />
     <Compile Include="Themes\Controls.xaml.cs">
@@ -110,14 +103,6 @@
     <Compile Include="Themes\ThemesController.cs" />
     <Compile Include="Themes\ThemeTypes.cs" />
     <Compile Include="Windows\WindowBase.cs" />
-    <Page Include="Controls\DummyUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\spohag.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

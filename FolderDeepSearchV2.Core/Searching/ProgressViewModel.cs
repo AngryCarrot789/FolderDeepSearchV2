@@ -29,18 +29,18 @@ namespace FolderDeepSearchV2.Core.Searching {
         }
 
         public ProgressViewModel(FolderSearchViewModel search) {
-            Task.Run(async () => {
+            Task.Factory.StartNew(async () => {
                 while (ServiceManager.App.IsRunning()) {
                     if (search.IsSearching) {
                         this.CurrentPath = search.CurrentPath;
                     }
-                    else {
+                    else if (this.CurrentPath != null) {
                         this.CurrentPath = null;
                     }
 
                     await Task.Delay(25);
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
         }
     }
 }

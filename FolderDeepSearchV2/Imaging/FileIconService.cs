@@ -110,7 +110,7 @@ namespace FolderDeepSearchV2.Imaging {
                     });
                 }
 
-                Thread.Sleep(10);
+                Thread.Sleep(20);
             }
         }
 
@@ -139,7 +139,7 @@ namespace FolderDeepSearchV2.Imaging {
                     });
                 }
 
-                Thread.Sleep(10);
+                Thread.Sleep(20);
             }
         }
 
