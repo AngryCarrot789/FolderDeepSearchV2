@@ -554,6 +554,8 @@ namespace FolderDeepSearchV2.Core.Searching {
                         return true;
                     }
 
+                    searchExtension = "." + searchExtension;
+
                     if (type != FileType.File) {
                         return false;
                     }
@@ -562,7 +564,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                     if (string.IsNullOrEmpty(extension)) {
                         return true;
                     }
-
+                    
                     return extension.Equals(searchExtension, this.caseSensitive ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture);
                 }
                 else {
