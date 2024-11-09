@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows.Input;
 using REghZy.MVVM.Commands;
 
@@ -7,6 +8,10 @@ namespace FolderDeepSearchV2.Core.Searching.Results {
 
         public FolderResultViewModel(string filePath) : base(filePath) {
             this.OpenFolderCommand = new RelayCommand(this.OpenFolderAction);
+            DirectoryInfo info = new DirectoryInfo(filePath);
+            this.TimeCreated = info.CreationTime;
+            this.TimeLastModified = info.LastWriteTime;
+            this.TimeLastAccessed = info.LastAccessTime;
         }
 
         public void OpenFolderAction() {

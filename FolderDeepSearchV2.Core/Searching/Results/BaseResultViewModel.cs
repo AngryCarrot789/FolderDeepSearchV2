@@ -9,6 +9,24 @@ namespace FolderDeepSearchV2.Core.Searching.Results {
             get => this.filePath;
             set => this.RaisePropertyChanged(ref this.filePath, value);
         }
+        
+        private DateTime timeCreated;
+        public DateTime TimeCreated {
+            get => this.timeCreated;
+            set => this.RaisePropertyChanged(ref this.timeCreated, value);
+        }
+        
+        private DateTime timeLastModified;
+        public DateTime TimeLastModified {
+            get => this.timeLastModified;
+            set => this.RaisePropertyChanged(ref this.timeLastModified, value);
+        }
+        
+        private DateTime timeLastAccessed;
+        public DateTime TimeLastAccessed {
+            get => this.timeLastAccessed;
+            set => this.RaisePropertyChanged(ref this.timeLastAccessed, value);
+        }
 
         public string FileName { get => Path.GetFileName(this.FilePath) ?? this.FilePath; }
 
@@ -49,6 +67,18 @@ namespace FolderDeepSearchV2.Core.Searching.Results {
 
         public static int CompareFileName(BaseResultViewModel a, BaseResultViewModel b) {
             return StringComparer.Ordinal.Compare(a.FileName ?? "", b.FileName ?? "");
+        }
+        
+        public static int CompareTimeCreated(BaseResultViewModel a, BaseResultViewModel b) {
+            return DateTime.Compare(a.timeCreated, b.timeCreated);
+        }
+        
+        public static int CompareTimeModified(BaseResultViewModel a, BaseResultViewModel b) {
+            return DateTime.Compare(a.timeLastModified, b.timeLastModified);
+        }
+        
+        public static int CompareTimeAccessed(BaseResultViewModel a, BaseResultViewModel b) {
+            return DateTime.Compare(a.timeLastAccessed, b.timeLastAccessed);
         }
     }
 }

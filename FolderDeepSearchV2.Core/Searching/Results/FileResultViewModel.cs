@@ -11,7 +11,12 @@ namespace FolderDeepSearchV2.Core.Searching.Results {
             this.OpenFileCommand = new RelayCommand(this.OpenFileAction);
 
             if (File.Exists(filePath)) {
-                this.CalculatedSize = new FileInfo(filePath).Length;
+                FileInfo info = new FileInfo(filePath);
+                
+                this.CalculatedSize = info.Length;
+                this.TimeCreated = info.CreationTime;
+                this.TimeLastModified = info.LastWriteTime;
+                this.TimeLastAccessed = info.LastAccessTime;
             }
         }
 

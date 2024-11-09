@@ -24,9 +24,7 @@ namespace FolderDeepSearchV2.Core.Searching.Results {
 
         protected SizeCalculatableResultViewModel(string filePath) : base(filePath) {
             this.CalculateSizeCommand = new RelayCommand(this.CalculateSizeAction);
-
             this.OpenContainingFolderCommand = new RelayCommand(this.OpenContainingFolderAction);
-
             this.CopyPathToClipboard = new RelayCommand(() => {
                 ServiceManager.Clipboard.SetText(this.FilePath);
             });

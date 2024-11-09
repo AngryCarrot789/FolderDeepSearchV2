@@ -20,10 +20,14 @@ namespace FolderDeepSearchV2.Core.Searching {
         public ObservableCollection<BaseResultViewModel> Results { get; }
 
         public ICommand ClearCommand { get; }
+        public ICommand ReverseListCommand { get; }
         public ICommand SortByNameACommand { get; }
         public ICommand SortByNameBCommand { get; }
         public ICommand SortByTypeCommand { get; }
         public ICommand SortByExtensionCommand { get; }
+        public ICommand SortByTimeCreatedCommand { get; }
+        public ICommand SortByTimeModifiedCommand { get; }
+        public ICommand SortByTimeAccessedCommand { get; }
         public ICommand SortByNameCommand { get; }
 
         private readonly ConcurrentQueue<BaseResultViewModel> resultQueue;
@@ -37,10 +41,14 @@ namespace FolderDeepSearchV2.Core.Searching {
             this.ClearCommand = new RelayCommand(this.Clear);
             this.SortByNameACommand = new RelayCommand(() => this.Sort(true));
             this.SortByNameBCommand = new RelayCommand(() => this.Sort(false));
+            this.ReverseListCommand = new RelayCommand(this.ReverseList);
 
             this.SortByTypeCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFolder));
             this.SortByExtensionCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFolderAndFileExtension));
             this.SortByNameCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareFileName));
+            this.SortByTimeCreatedCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareTimeCreated));
+            this.SortByTimeModifiedCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareTimeModified));
+            this.SortByTimeAccessedCommand = new RelayCommand(() => this.Sort(BaseResultViewModel.CompareTimeAccessed));
         }
 
         private void Sort(Comparison<BaseResultViewModel> comparer) {
@@ -79,6 +87,14 @@ namespace FolderDeepSearchV2.Core.Searching {
 
         private void Sort(bool ascending) {
             List<BaseResultViewModel> list = (ascending ? this.Results.OrderBy(a => a.FileName) : this.Results.OrderByDescending(a => a.FileName)).ToList();
+            this.Results.Clear();
+            foreach (BaseResultViewModel result in list) {
+                this.Results.Add(result);
+            }
+        }
+        
+        private void ReverseList() {
+            List<BaseResultViewModel> list = this.Results.Reverse().ToList();
             this.Results.Clear();
             foreach (BaseResultViewModel result in list) {
                 this.Results.Add(result);

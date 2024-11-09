@@ -30,7 +30,7 @@ namespace FolderDeepSearchV2 {
             //     await Task.Delay(2500);
             //     source.Cancel(true);
             // });
-
+            
             this.Loaded += this.MainWindow_Loaded;
         }
 

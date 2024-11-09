@@ -8,9 +8,9 @@
         <ResourceDictionary Source="/PresentationFramework.Aero;V3.0.0.0;31bf3856ad364e35;component/themes/Aero.normalcolor.xaml" />
         -->
 
+        <ResourceDictionary Source="/PresentationFramework.Luna;V3.0.0.0;31bf3856ad364e35;component/themes/Luna.normalcolor.xaml" />
         <!-- WINDOWS XP
         -->
-        <ResourceDictionary Source="/PresentationFramework.Luna;V3.0.0.0;31bf3856ad364e35;component/themes/Luna.normalcolor.xaml" />
 
         <!-- WIN98
         <ResourceDictionary Source="/PresentationFramework.Classic;V3.0.0.0;31bf3856ad364e35;component/themes/Classic.xaml" />

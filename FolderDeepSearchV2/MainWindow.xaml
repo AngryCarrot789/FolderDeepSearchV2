@@ -9,6 +9,7 @@
         xmlns:conv="clr-namespace:FolderDeepSearchV2.Converters"
         xmlns:results="clr-namespace:FolderDeepSearchV2.Core.Searching.Results;assembly=FolderDeepSearchV2.Core"
         xmlns:controls="clr-namespace:FolderDeepSearchV2.Controls"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="612.5" Width="600"
         d:DataContext="{d:DesignInstance Type={x:Type searching:FolderSearchViewModel}}"
@@ -19,6 +20,7 @@
         MinWidth="460" MinHeight="335">
     <Window.Resources>
         <conv:BooleanConverter x:Key="InvertBool" TrueValue="False" FalseValue="True"/>
+        <system:String x:Key="DateFormatString">d MMM yyyy (dd/MM/yyyy) HH:mm:ss</system:String>
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding SelectDirectoryCommand, Mode=OneTime}"/>
@@ -105,9 +107,10 @@
 
                 <WrapPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="2">
                     <CheckBox Content="Case Sensitive" Margin="0,0,5,0" IsChecked="{Binding CaseSensitive}"/>
-                    <CheckBox Content="Recursive Search" Margin="0,0,5,0" IsChecked="{Binding SearchRecursively}"/>
-                    <CheckBox Content="Ignore File Extensions" Margin="0,0,5,0" IsChecked="{Binding IgnoreFileExtension}"/>
-                    <CheckBox Content="Use StartsWith" Margin="0,0,5,0" IsChecked="{Binding NameStartsWithTerm}"/>
+                    <CheckBox Content="Recursive" Margin="0,0,5,0" IsChecked="{Binding SearchRecursively}"/>
+                    <CheckBox Content="Ignore Extensions" Margin="0,0,5,0" IsChecked="{Binding IgnoreFileExtension}"/>
+                    <CheckBox Content="Use StartsWith" Margin="0,0,5,0" IsChecked="{Binding UseNameStartsWithTerm}"/>
+                    <CheckBox Content="Use Exact Search" Margin="0,0,5,0" IsChecked="{Binding UseExactSearchTerm}"/>
                 </WrapPanel>
             </Grid>
         </Border>
@@ -150,10 +153,14 @@
                             <MenuItem Header="Sort by folder to file (does not sort names)" Command="{Binding SortByTypeCommand, Mode=OneTime}"/>
                             <MenuItem Header="Sort by file extension (A-Z)" Command="{Binding SortByExtensionCommand, Mode=OneTime}"/>
                             <MenuItem Header="Sort by file name (not path) (A-Z)" Command="{Binding SortByNameCommand, Mode=OneTime}"/>
+                            <MenuItem Header="Sort by time created" Command="{Binding SortByTimeCreatedCommand, Mode=OneTime}"/>
+                            <MenuItem Header="Sort by time last modified" Command="{Binding SortByTimeModifiedCommand, Mode=OneTime}"/>
+                            <MenuItem Header="Sort by time last accessed" Command="{Binding SortByTimeAccessedCommand, Mode=OneTime}"/>
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Button DockPanel.Dock="Right" Command="{Binding ClearCommand, Mode=OneTime}" Content="Clear" HorizontalAlignment="Left" Width="64" BorderThickness="1"/>
+                <Button DockPanel.Dock="Right" Command="{Binding ClearCommand, Mode=OneTime}" Content="Clear" HorizontalAlignment="Left" Width="64" BorderThickness="1" ToolTip="Clear the list"/>
+                <Button DockPanel.Dock="Right" Command="{Binding ReverseListCommand, Mode=OneTime}" Content="Reverse" HorizontalAlignment="Left" Width="64" BorderThickness="1" ToolTip="Reverse the order of the list. Bottom items moved to the top and vice versa"/>
                 <Button DockPanel.Dock="Right" Command="{Binding SortByNameBCommand, Mode=OneTime}" Content="Sort (Z-A)" HorizontalAlignment="Left" Width="100" BorderThickness="1"/>
                 <Button DockPanel.Dock="Right" Command="{Binding SortByNameACommand, Mode=OneTime}" Content="Sort (A-Z)" HorizontalAlignment="Left" Width="100" BorderThickness="1"/>
             </DockPanel>
@@ -177,16 +184,40 @@
                     </ContextMenu>
                     <conv:FileSizeConverter x:Key="FileSizeConverter"/>
                     <DataTemplate DataType="{x:Type results:FileResultViewModel}">
-                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}">
+                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}" Background="Transparent">
+                            <Grid.ToolTip>
+                                <TextBlock Margin="4" FontSize="14">
+                                    <Run Text="Created:       " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeCreated, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                    <LineBreak/>
+                                    <Run Text="Last Modified: " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeLastModified, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                    <LineBreak/>
+                                    <Run Text="Last Accessed: " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeLastModified, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                </TextBlock>
+                            </Grid.ToolTip>
                             <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                             <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={x:Static conv:PathToNameConverter.Instance}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
                             <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>
-                            <TextBlock Text="{Binding FilePath, Converter={x:Static conv:PathToExtensionConverter.Instance}}" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,0,0" Width="40" Height="18"/>
+                            <TextBlock Text="{Binding FilePath, Converter={x:Static conv:PathToExtensionConverter.Instance}}" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,5,0" Width="40" Height="18"/>
                             <Button Command="{Binding CalculateSizeCommand, Mode=OneTime}" Content="{Binding CalculatedSize, Converter={StaticResource FileSizeConverter}}" ToolTip="Refresh the file size" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,44,0" Width="64" MinHeight="18"/>
                         </Grid>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type results:FolderResultViewModel}">
-                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}">
+                        <Grid Height="44" ContextMenu="{StaticResource FileResultContextMenu}" Background="Transparent">
+                            <Grid.ToolTip>
+                                <TextBlock Margin="4" FontSize="14">
+                                    <Run Text="Created:       " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeCreated, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                    <LineBreak/>
+                                    <Run Text="Last Modified: " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeLastModified, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                    <LineBreak/>
+                                    <Run Text="Last Accessed: " FontFamily="Consolas"/>
+                                    <Run Text="{Binding TimeLastModified, StringFormat={StaticResource DateFormatString}}" FontFamily="Consolas"/>
+                                </TextBlock>
+                            </Grid.ToolTip>
                             <controls:AsyncImage FilePath="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="28" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                             <controls:HighlightableTextBlock Padding="2" Text="{Binding FilePath, Converter={x:Static conv:PathToNameConverter.Instance}}" Margin="32,0,112,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" DockPanel.Dock="Left" Height="24" FontWeight="Bold"/>
                             <TextBlock Padding="2" Text="{Binding FilePath}" Margin="32,21,0,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Stretch" Height="23"/>

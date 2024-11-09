@@ -108,10 +108,36 @@ namespace FolderDeepSearchV2.Core.Searching {
             }
         }
 
-        private bool nameStartsWithTerm;
-        public bool NameStartsWithTerm {
-            get => this.nameStartsWithTerm;
-            set => this.RaisePropertyChanged(ref this.nameStartsWithTerm, value);
+        private bool useNameStartsWithTerm;
+        public bool UseNameStartsWithTerm {
+            get => this.useNameStartsWithTerm;
+            set {
+                if (value == this.useNameStartsWithTerm)
+                    return;
+                
+                this.searchTypeInternal = SearchType.StartsWith;
+                if (value && this.useExactSearchTerm)
+                    this.RaisePropertyChanged(ref this.useExactSearchTerm, false, nameof(this.UseExactSearchTerm));
+                this.RaisePropertyChanged(ref this.useNameStartsWithTerm, value);
+                if (!value && !this.useExactSearchTerm)
+                    this.searchTypeInternal = SearchType.Contains;
+            }
+        }
+
+        private bool useExactSearchTerm;
+        public bool UseExactSearchTerm {
+            get => this.useExactSearchTerm;
+            set {
+                if (value == this.useExactSearchTerm)
+                    return;
+                
+                this.searchTypeInternal = SearchType.Exact;
+                if (value && this.useNameStartsWithTerm)
+                    this.RaisePropertyChanged(ref this.useNameStartsWithTerm, false, nameof(this.UseNameStartsWithTerm));
+                this.RaisePropertyChanged(ref this.useExactSearchTerm, value);
+                if (!value && !this.useNameStartsWithTerm)
+                    this.searchTypeInternal = SearchType.Contains;
+            }
         }
 
         private bool ignoreSecurityErrors;
@@ -119,6 +145,8 @@ namespace FolderDeepSearchV2.Core.Searching {
             get => this.ignoreSecurityErrors;
             set => this.RaisePropertyChanged(ref this.ignoreSecurityErrors, value);
         }
+        
+        private SearchType searchTypeInternal;
 
         public ResultListViewModel ResultList { get; }
 
@@ -165,7 +193,7 @@ namespace FolderDeepSearchV2.Core.Searching {
             });
             this.ToggleNameStartsWithCommand = new RelayCommand(() => {
                 if (!this.IsSearching)
-                    this.NameStartsWithTerm = !this.NameStartsWithTerm;
+                    this.UseNameStartsWithTerm = !this.UseNameStartsWithTerm;
             });
 
             this.StartCommand = new RelayCommand(this.StartSearchAction);
@@ -185,12 +213,12 @@ namespace FolderDeepSearchV2.Core.Searching {
 
             this.Progress = new ProgressViewModel(this);
             this.ResultList = new ResultListViewModel(this);
+            this.searchTypeInternal = SearchType.Contains;
         }
 
         public void CancelAndWait() {
             if (this.IsSearching) {
                 this.cancellation?.Cancel(false);
-                this.searchTask?.Wait();
             }
         }
 
@@ -215,9 +243,10 @@ namespace FolderDeepSearchV2.Core.Searching {
                 return;
             }
 
+            this.cancellation = new CancellationTokenSource();
+            this.IsSearching = true;
             this.searchTask = Task.Run(async () => {
                 try {
-                    this.IsSearching = true;
                     await this.RunSearchAsync(this.TargetDirectory, this.SearchTerm);
                 }
                 catch (SearchCancelledException) {
@@ -235,21 +264,18 @@ namespace FolderDeepSearchV2.Core.Searching {
                         e.StackTrace);
 #endif
                 }
-                finally {
-                    this.IsSearching = false;
-                }
             }).ContinueWith(x => {
+                this.IsSearching = false;
+                this.cancellation = null;
                 this.ResultList.InsertQueueIntoResultList();
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private Task RunSearchAsync(string directory, string search) {
-            this.cancellation = new CancellationTokenSource();
             try {
                 this.SearchDirectory(directory, search, this.SearchRecursively, this.cancellation.Token);
             }
             finally {
-                this.cancellation = null;
                 this.CurrentPath = null;
             }
 
@@ -495,18 +521,26 @@ namespace FolderDeepSearchV2.Core.Searching {
             return -1;
         }
 
+        private enum SearchType {
+            StartsWith,
+            Contains,
+            Exact
+        }
+        
+        private static bool MatchString(string search, string term, bool caseSensitive, SearchType type) {
+            StringComparison comparison = caseSensitive ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture;
+            
+            switch (type) {
+                case SearchType.StartsWith: return search.StartsWith(term, comparison);
+                case SearchType.Contains: return search.IndexOf(term, 0, comparison) != -1;
+                case SearchType.Exact: return search.Equals(term, comparison);
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
         private bool MatchName(string path, string term, FileType type, bool ignoreExtension) {
             if (ignoreExtension) {
-                string search = Path.GetFileNameWithoutExtension(path);
-                if (this.caseSensitive) {
-                    return this.nameStartsWithTerm ? search.StartsWith(term) : search.Contains(term);
-                }
-                else if (this.nameStartsWithTerm) {
-                    return search.StartsWith(term, StringComparison.CurrentCultureIgnoreCase);
-                }
-                else {
-                    return search.IndexOf(term, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
-                }
+                return MatchString(Path.GetFileNameWithoutExtension(path), term, this.caseSensitive, this.searchTypeInternal);
             }
             else {
                 string fileName = Path.GetFileName(path);
@@ -514,18 +548,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                     return term == "";
                 }
 
-                bool result;
-                if (this.caseSensitive) {
-                    result = this.nameStartsWithTerm ? fileName.StartsWith(term) : fileName.Contains(term);
-                }
-                else if (this.nameStartsWithTerm) {
-                    result = fileName.StartsWith(term, StringComparison.CurrentCultureIgnoreCase);
-                }
-                else {
-                    result = fileName.IndexOf(term, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
-                }
-
-                if (result) {
+                if (MatchString(fileName, term, this.caseSensitive, this.searchTypeInternal)) {
                     string searchExtension = this.searchTermExtension;
                     if (string.IsNullOrWhiteSpace(searchExtension)) {
                         return true;
@@ -540,12 +563,7 @@ namespace FolderDeepSearchV2.Core.Searching {
                         return true;
                     }
 
-                    if (this.caseSensitive) {
-                        return extension.Contains(searchExtension);
-                    }
-                    else {
-                        return extension.IndexOf(searchExtension, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
-                    }
+                    return extension.Equals(searchExtension, this.caseSensitive ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture);
                 }
                 else {
                     return false;
